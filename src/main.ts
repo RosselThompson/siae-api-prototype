@@ -20,6 +20,7 @@ async function bootstrap() {
     .setTitle('SIAE API')
     .setDescription('Contains the documentation for using the endpoints')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('/api/docs', app, document);

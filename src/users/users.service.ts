@@ -39,4 +39,8 @@ export class UsersService {
     await this.userRepository.update(id, { isActive: false });
     return { status: HttpStatus.OK, msg: 'User was removed' };
   }
+
+  async findByEmail(email: string) {
+    return await this.userRepository.findOneBy({ email });
+  }
 }
