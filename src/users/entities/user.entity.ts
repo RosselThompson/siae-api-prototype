@@ -1,10 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column } from 'typeorm';
+import { AbstractEntity } from 'src/common/entities/abstract.entity';
 
 @Entity()
-export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
-
+export class User extends AbstractEntity {
   @Column({ unique: true })
   email!: string;
 
@@ -16,7 +14,4 @@ export class User {
 
   @Column()
   lastName: string;
-
-  @Column({ default: true })
-  isActive!: boolean;
 }

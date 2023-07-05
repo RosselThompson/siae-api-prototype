@@ -8,6 +8,7 @@ import { customError, customOk } from 'src/common/helpers/customResponse';
 import { PageOptionsDto } from 'src/common/dtos/page-options.dto';
 import { PageMetaDto } from 'src/common/dtos/page-meta.dto';
 import { PageDto } from 'src/common/dtos/page.dto';
+import { getPageQuery } from 'src/common/helpers/getPageQuery';
 
 @Injectable()
 export class UsersService {
@@ -26,13 +27,11 @@ export class UsersService {
 
   async findAll(pageOptionsDto: PageOptionsDto) {
     const queryBuilder = this.userRepository.createQueryBuilder('user');
-    queryBuilder
-      .orderBy('user.email', pageOptionsDto.order)
-      .skip(pageOptionsDto.skip)
-      .take(pageOptionsDto.take);
-
-    const itemCount = await queryBuilder.getCount();
-    const { entities } = await queryBuilder.getRawAndEntities();
+    const { itemCount, entities } = await getPageQuery(
+      'user',
+      pageOptionsDto,
+      queryBuilder,
+    );
     const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
 
     return new PageDto(entities, pageMetaDto);
