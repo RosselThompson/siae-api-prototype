@@ -14,4 +14,7 @@ export class User extends AbstractEntity {
 
   @Column()
   lastName: string;
+
+  @Column({ default: true })
+  hasHashPassword: boolean;
 }

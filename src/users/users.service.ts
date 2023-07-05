@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserDto } from './dto/user.dto';
@@ -17,7 +17,7 @@ export class UsersService {
   ) {}
 
   async create(userDto: UserDto) {
-    const isExist = this.findByEmail(userDto.email);
+    const isExist = await this.findByEmail(userDto.email);
     if (isExist) throw customError('This user already exists');
     const hash = await hashPassword(userDto.password);
     const user = { ...userDto, password: hash };
