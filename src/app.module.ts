@@ -6,9 +6,16 @@ import { UsersModule } from './users/users.module';
 import { AppConfigModule } from './config/app/config.module';
 import { DbConfigModule } from './config/db/config.module';
 import { AuthModule } from './auth/auth.module';
+import { RolesModule } from './roles/roles.module';
 
 @Module({
-  imports: [AppConfigModule, DbConfigModule, UsersModule, AuthModule],
+  imports: [
+    AppConfigModule,
+    DbConfigModule,
+    UsersModule,
+    RolesModule,
+    AuthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
