@@ -30,4 +30,9 @@ export class UserDto {
   @IsOptional()
   @IsBoolean()
   hasHashPassword?: boolean;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  roleId: string;
 }

@@ -8,24 +8,34 @@ import { customError, customOk } from 'src/common/helpers/customResponse';
 import { UserQueryDto } from './dto/user-query.dto';
 import { getPaginationData } from 'src/common/helpers/getPaginationData';
 import { setFilterToQueryBuilder } from './filters/query.filter';
+import { Role } from 'src/roles/entities/role.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+
+    @InjectRepository(Role)
+    private roleRepository: Repository<Role>,
   ) {}
 
   async create(userDto: UserDto) {
     const isExist = await this.findByEmail(userDto.email);
     if (isExist) throw customError('This user already exists');
+
+    const role = await this.roleRepository.findOneBy({ id: userDto.roleId });
+    if (!role.id) throw customError('This role does not exist');
+
     const hash = await hashPassword(userDto.password);
-    const user = { ...userDto, password: hash };
+    const user = { ...userDto, password: hash, role };
+
     return await this.userRepository.save(user);
   }
 
   async findAll(userQueryDto: UserQueryDto) {
     const queryBuilder = this.userRepository.createQueryBuilder('user');
+    queryBuilder.innerJoinAndSelect('user.role', 'role');
     const queryBuilderWithFilters = setFilterToQueryBuilder(
       userQueryDto,
       queryBuilder,
@@ -43,9 +53,13 @@ export class UsersService {
   }
 
   async update(id: string, userDto: UserDto) {
+    const role = await this.roleRepository.findOneBy({ id: userDto.roleId });
+    if (!role.id) throw customError('This role does not exist');
+
     const hash = await hashPassword(userDto.password);
-    const user = { ...userDto, id, password: hash };
+    const user = { ...userDto, id, password: hash, role };
     await this.userRepository.update(id, user);
+
     return this.userRepository.findOneBy({ id });
   }
 

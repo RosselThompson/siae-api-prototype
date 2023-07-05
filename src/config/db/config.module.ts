@@ -24,6 +24,7 @@ import DbConfig from './config';
       entities: ['dist/**/*.entity{.ts,.js}'],
       synchronize: true,
       options: { encrypt: false },
+      autoLoadEntities: true,
     }),
   ],
   providers: [ConfigService, DbConfigService],
