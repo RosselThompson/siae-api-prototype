@@ -5,10 +5,9 @@ import { UserDto } from './dto/user.dto';
 import { User } from './entities/user.entity';
 import { hashPassword } from 'src/common/helpers/hashPassword';
 import { customError, customOk } from 'src/common/helpers/customResponse';
-import { PageOptionsDto } from 'src/common/dtos/page-options.dto';
-import { PageMetaDto } from 'src/common/dtos/page-meta.dto';
-import { PageDto } from 'src/common/dtos/page.dto';
-import { getPageQuery } from 'src/common/helpers/getPageQuery';
+import { UserQueryDto } from './dto/user-query.dto';
+import { getPaginationData } from 'src/common/helpers/getPaginationData';
+import { setFilterToQueryBuilder } from './filters/query.filter';
 
 @Injectable()
 export class UsersService {
@@ -25,16 +24,18 @@ export class UsersService {
     return await this.userRepository.save(user);
   }
 
-  async findAll(pageOptionsDto: PageOptionsDto) {
+  async findAll(userQueryDto: UserQueryDto) {
     const queryBuilder = this.userRepository.createQueryBuilder('user');
-    const { itemCount, entities } = await getPageQuery(
-      'user',
-      pageOptionsDto,
+    const queryBuilderWithFilters = setFilterToQueryBuilder(
+      userQueryDto,
       queryBuilder,
     );
-    const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
-
-    return new PageDto(entities, pageMetaDto);
+    const paginationData = await getPaginationData(
+      'user',
+      userQueryDto,
+      queryBuilderWithFilters,
+    );
+    return paginationData;
   }
 
   async findOne(id: string) {

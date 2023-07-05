@@ -1,7 +1,9 @@
 import { SelectQueryBuilder } from 'typeorm';
 import { PageOptionsDto } from '../dtos/page-options.dto';
+import { PageMetaDto } from '../dtos/page-meta.dto';
+import { PageDto } from '../dtos/page.dto';
 
-export const getPageQuery = async (
+export const getPaginationData = async (
   entityName: string,
   pageOptionsDto: PageOptionsDto,
   queryBuilder: SelectQueryBuilder<any>,
@@ -16,10 +18,14 @@ export const getPageQuery = async (
   queryBuilder
     .orderBy(`${entityName}.${pageConfig.sortBy}`, pageConfig.orderBy)
     .skip(skip)
-    .take(pageOptionsDto.size);
+    .take(pageConfig.size);
 
   const itemCount = await queryBuilder.getCount();
   const { entities } = await queryBuilder.getRawAndEntities();
+  const pageMetaDto = new PageMetaDto({
+    itemCount,
+    pageOptionsDto: pageConfig,
+  });
 
-  return { itemCount, entities };
+  return new PageDto(entities, pageMetaDto);
 };

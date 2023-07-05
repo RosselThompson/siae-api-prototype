@@ -13,7 +13,7 @@ import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UserDto } from './dto/user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { PageOptionsDto } from 'src/common/dtos/page-options.dto';
+import { UserQueryDto } from './dto/user-query.dto';
 
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
@@ -28,8 +28,8 @@ export class UsersController {
   }
 
   @Get()
-  findAll(@Query() pageOptionsDto: PageOptionsDto) {
-    return this.usersService.findAll(pageOptionsDto);
+  findAll(@Query() userQueryDto: UserQueryDto) {
+    return this.usersService.findAll(userQueryDto);
   }
 
   @Get(':id')
