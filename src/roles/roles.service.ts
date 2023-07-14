@@ -21,7 +21,7 @@ export class RolesService {
 
   async findAll(roleQueryDto: RoleQueryDto) {
     const queryBuilder = this.roleRepository.createQueryBuilder('role');
-    queryBuilder.innerJoinAndSelect('role.users', 'user');
+    queryBuilder.leftJoinAndSelect('role.users', 'user');
     const queryBuilderWithFilters = setFilterToQueryBuilder(
       roleQueryDto,
       queryBuilder,
