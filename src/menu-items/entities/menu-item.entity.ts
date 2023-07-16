@@ -2,7 +2,7 @@ import { Entity, Column, OneToMany, JoinColumn } from 'typeorm';
 import { AbstractEntity } from 'src/common/entities/abstract.entity';
 import { Permission } from 'src/permissions/entities/permission.entity';
 
-@Entity()
+@Entity('menuItem')
 export class MenuItem extends AbstractEntity {
   @Column()
   name!: string;

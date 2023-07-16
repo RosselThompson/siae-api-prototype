@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { RoleDto } from './dto/role.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from './entities/role.entity';
@@ -23,7 +23,18 @@ export class RolesService {
     const isExist = await this.roleRepository.findOneBy({ name: roleDto.name });
     if (isExist) throw customError('This role already exists');
 
-    return await this.roleRepository.save(roleDto);
+    const roleWithoutPermissions = { ...roleDto, permissions: [] };
+
+    const createdRole = await this.roleRepository.save(roleWithoutPermissions);
+
+    roleDto.permissions.forEach(async (permission) => {
+      await this.permissionRepository.save({
+        ...permission,
+        roleId: createdRole.id,
+      });
+    });
+
+    return this.roleRepository.findOneBy({ id: createdRole.id });
   }
 
   async findAll(roleQueryDto: RoleQueryDto) {

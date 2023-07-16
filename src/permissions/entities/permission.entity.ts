@@ -3,7 +3,7 @@ import { MenuItem } from 'src/menu-items/entities/menu-item.entity';
 import { Role } from 'src/roles/entities/role.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
-@Entity()
+@Entity('permission')
 export class Permission extends AbstractEntity {
   @Column()
   show: boolean;

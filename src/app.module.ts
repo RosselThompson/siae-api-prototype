@@ -7,8 +7,8 @@ import { AppConfigModule } from './config/app/config.module';
 import { DbConfigModule } from './config/db/config.module';
 import { AuthModule } from './auth/auth.module';
 import { RolesModule } from './roles/roles.module';
-import { MenuItemsModule } from './menu-items/menu-items.module';
 import { PermissionsModule } from './permissions/permissions.module';
+import { MenuItemsModule } from './menu-items/menu-items.module';
 
 @Module({
   imports: [

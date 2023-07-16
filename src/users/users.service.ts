@@ -25,7 +25,7 @@ export class UsersService {
     if (isExist) throw customError('This user already exists');
 
     const role = await this.roleRepository.findOneBy({ id: userDto.roleId });
-    if (!role.id) throw customError('This role does not exist');
+    if (!role) throw customError('This role does not exist');
 
     const hash = await hashPassword(userDto.password);
     const user = { ...userDto, password: hash, role };
@@ -49,18 +49,28 @@ export class UsersService {
   }
 
   async findOne(id: string) {
-    return this.userRepository.findOneBy({ id });
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: {
+        role: true,
+      },
+    });
+    if (!user) throw customError('This user does not exist');
+
+    return user;
   }
 
   async update(id: string, userDto: UserDto) {
     const role = await this.roleRepository.findOneBy({ id: userDto.roleId });
-    if (!role.id) throw customError('This role does not exist');
+    if (!role) throw customError('This role does not exist');
 
-    const hash = await hashPassword(userDto.password);
-    const user = { ...userDto, id, password: hash, role };
-    await this.userRepository.update(id, user);
+    await this.userRepository.update(id, {
+      firstName: userDto.firstName,
+      lastName: userDto.lastName,
+      role,
+    });
 
-    return this.userRepository.findOneBy({ id });
+    return await this.userRepository.findOneBy({ id });
   }
 
   async remove(id: string) {

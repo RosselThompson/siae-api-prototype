@@ -2,7 +2,7 @@ import { Entity, Column, JoinColumn, ManyToOne } from 'typeorm';
 import { AbstractEntity } from 'src/common/entities/abstract.entity';
 import { Role } from 'src/roles/entities/role.entity';
 
-@Entity()
+@Entity('user')
 export class User extends AbstractEntity {
   @Column({ unique: true })
   email!: string;

@@ -3,7 +3,7 @@ import { AbstractEntity } from 'src/common/entities/abstract.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Permission } from 'src/permissions/entities/permission.entity';
 
-@Entity()
+@Entity('role')
 export class Role extends AbstractEntity {
   @Column()
   name!: string;
