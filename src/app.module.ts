@@ -8,6 +8,7 @@ import { DbConfigModule } from './config/db/config.module';
 import { AuthModule } from './auth/auth.module';
 import { RolesModule } from './roles/roles.module';
 import { MenuItemsModule } from './menu-items/menu-items.module';
+import { PermissionsModule } from './permissions/permissions.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { MenuItemsModule } from './menu-items/menu-items.module';
     RolesModule,
     AuthModule,
     MenuItemsModule,
+    PermissionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

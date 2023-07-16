@@ -1,5 +1,6 @@
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, OneToMany, JoinColumn } from 'typeorm';
 import { AbstractEntity } from 'src/common/entities/abstract.entity';
+import { Permission } from 'src/permissions/entities/permission.entity';
 
 @Entity()
 export class MenuItem extends AbstractEntity {
@@ -14,4 +15,10 @@ export class MenuItem extends AbstractEntity {
 
   @Column()
   order: number;
+
+  @OneToMany(() => Permission, (permission) => permission.menuItem, {
+    cascade: true,
+  })
+  @JoinColumn()
+  permissions: Permission[];
 }
