@@ -10,5 +10,6 @@ import { MenuItem } from 'src/menu-items/entities/menu-item.entity';
   imports: [TypeOrmModule.forFeature([Permission, Role, MenuItem])],
   controllers: [PermissionsController],
   providers: [PermissionsService],
+  exports: [PermissionsService],
 })
 export class PermissionsModule {}

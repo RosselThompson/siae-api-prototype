@@ -24,14 +24,41 @@ export class PermissionsService {
     const role = await this.roleRepository.findOneBy({
       id: permissionDto.roleId,
     });
-    if (!role.id) throw customError('This role does not exist');
+    if (!role) throw customError('This role does not exist');
 
     const menuItem = await this.menuItemRepository.findOneBy({
       id: permissionDto.menuItemId,
     });
-    if (!menuItem.id) throw customError('This menu item does not exist');
+    if (!menuItem) throw customError('This menu item does not exist');
 
-    return await this.permissionRepository.save(permissionDto);
+    return await this.permissionRepository.save({
+      ...permissionDto,
+      role,
+      menuItem,
+    });
+  }
+
+  async update(id: string, permissionDto: PermissionDto) {
+    const currentPermission = await this.permissionRepository.findOneBy({ id });
+    if (!currentPermission) throw customError('This permission does not exist');
+
+    const menuItem = await this.menuItemRepository.findOneBy({
+      id: permissionDto.menuItemId,
+    });
+    if (!menuItem) throw customError('This menu item does not exist');
+
+    this.permissionRepository.update(currentPermission.id, {
+      ...permissionDto,
+      menuItem,
+    });
+
+    return await this.permissionRepository.findOne({
+      where: { id: currentPermission.id },
+      relations: {
+        menuItem: true,
+        role: true,
+      },
+    });
   }
 
   findAll() {
@@ -40,10 +67,6 @@ export class PermissionsService {
 
   findOne(id: string) {
     return `This action returns a #${id} permission`;
-  }
-
-  update(id: string, updatePermissionDto: PermissionDto) {
-    return `This action updates a #${id} permission`;
   }
 
   remove(id: number) {

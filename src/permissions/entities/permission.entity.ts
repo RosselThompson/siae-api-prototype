@@ -18,7 +18,7 @@ export class Permission extends AbstractEntity {
   remove: boolean;
 
   @ManyToOne(() => MenuItem, (menuItem) => menuItem.permissions)
-  @JoinColumn({ name: 'menuItemId', referencedColumnName: 'id' })
+  @JoinColumn()
   menuItem: MenuItem;
 
   @ManyToOne(() => Role, (role) => role.permissions)
