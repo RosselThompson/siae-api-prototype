@@ -40,15 +40,10 @@ export class RolesService {
   }
 
   async findAll(roleQueryDto: RoleQueryDto) {
-    const queryBuilder = this.roleRepository.createQueryBuilder('role');
-
-    queryBuilder.leftJoinAndSelect('role.users', 'user');
-    queryBuilder.leftJoinAndSelect('role.permissions', 'permission');
-    queryBuilder.leftJoinAndSelect('permission.menuItem', 'menuItem');
-
+    const rolesQueryBuilder = this.generateRolesQueryBuilder();
     const queryBuilderWithFilters = setFilterToQueryBuilder(
       roleQueryDto,
-      queryBuilder,
+      rolesQueryBuilder,
     );
     const paginationData = await getPaginationData(
       'role',
@@ -59,12 +54,12 @@ export class RolesService {
   }
 
   async findOne(id: string) {
-    const queryBuilder = this.roleRepository.createQueryBuilder('role');
-    queryBuilder.leftJoinAndSelect('role.users', 'user');
-    queryBuilder.leftJoinAndSelect('role.permissions', 'permission');
-    queryBuilder.leftJoinAndSelect('permission.menuItem', 'menuItem');
-
-    return await queryBuilder.where('role.id = :id', { id }).getOne();
+    try {
+      const rolesQueryBuilder = this.generateRolesQueryBuilder();
+      return await rolesQueryBuilder.where('role.id = :id', { id }).getOne();
+    } catch (err) {
+      throw customError('This role already exists');
+    }
   }
 
   async update(id: string, updateRoleDto: RoleDto) {
@@ -75,5 +70,13 @@ export class RolesService {
   async remove(id: string) {
     await this.roleRepository.update(id, { isActive: false });
     return customOk('User was removed');
+  }
+
+  generateRolesQueryBuilder() {
+    const queryBuilder = this.roleRepository.createQueryBuilder('role');
+    queryBuilder.leftJoinAndSelect('role.users', 'user');
+    queryBuilder.leftJoinAndSelect('role.permissions', 'permission');
+    queryBuilder.leftJoinAndSelect('permission.menuItem', 'menuItem');
+    return queryBuilder;
   }
 }

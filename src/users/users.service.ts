@@ -34,11 +34,10 @@ export class UsersService {
   }
 
   async findAll(userQueryDto: UserQueryDto) {
-    const queryBuilder = this.userRepository.createQueryBuilder('user');
-    queryBuilder.innerJoinAndSelect('user.role', 'role');
+    const userQueryBuilder = this.generateUserQueryBuilder();
     const queryBuilderWithFilters = setFilterToQueryBuilder(
       userQueryDto,
-      queryBuilder,
+      userQueryBuilder,
     );
     const paginationData = await getPaginationData(
       'user',
@@ -49,15 +48,12 @@ export class UsersService {
   }
 
   async findOne(id: string) {
-    const user = await this.userRepository.findOne({
-      where: { id },
-      relations: {
-        role: true,
-      },
-    });
-    if (!user) throw customError('This user does not exist');
-
-    return user;
+    try {
+      const userQueryBuilder = this.generateUserQueryBuilder();
+      return await userQueryBuilder.where('user.id = :id', { id }).getOne();
+    } catch (err) {
+      throw customError('This user does not exist');
+    }
   }
 
   async update(id: string, userDto: UserDto) {
@@ -80,5 +76,11 @@ export class UsersService {
 
   async findByEmail(email: string) {
     return await this.userRepository.findOneBy({ email });
+  }
+
+  generateUserQueryBuilder() {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .innerJoinAndSelect('user.role', 'role');
   }
 }
