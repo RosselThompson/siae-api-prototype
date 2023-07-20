@@ -60,16 +60,4 @@ export class PermissionsService {
       },
     });
   }
-
-  findAll() {
-    return `This action returns all permissions`;
-  }
-
-  findOne(id: string) {
-    return `This action returns a #${id} permission`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} permission`;
-  }
 }
