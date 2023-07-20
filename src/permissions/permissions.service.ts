@@ -38,26 +38,59 @@ export class PermissionsService {
     });
   }
 
-  async update(id: string, permissionDto: PermissionDto) {
-    const currentPermission = await this.permissionRepository.findOneBy({ id });
-    if (!currentPermission) throw customError('This permission does not exist');
-
-    const menuItem = await this.menuItemRepository.findOneBy({
-      id: permissionDto.menuItemId,
+  async partialUpdate(id: string, permissionDto: PermissionDto) {
+    return await this.permissionRepository.update(id, {
+      show: permissionDto.show,
+      save: permissionDto.save,
+      edit: permissionDto.edit,
+      remove: permissionDto.remove,
     });
-    if (!menuItem) throw customError('This menu item does not exist');
+  }
 
-    this.permissionRepository.update(currentPermission.id, {
-      ...permissionDto,
-      menuItem,
-    });
+  async remove(id: string) {
+    return await this.permissionRepository.update(id, { isActive: false });
+  }
 
-    return await this.permissionRepository.findOne({
-      where: { id: currentPermission.id },
-      relations: {
-        menuItem: true,
-        role: true,
-      },
-    });
+  async bulkUpdate(permissions: PermissionDto[], roleId: string) {
+    try {
+      const permissionsQueryBuilder =
+        this.permissionRepository.createQueryBuilder('permission');
+
+      const currentPermissions = await permissionsQueryBuilder
+        .where('roleId = :roleId', { roleId })
+        .andWhere('isActive = :isActive', { isActive: true })
+        .getMany();
+
+      const currentPermissionIds = currentPermissions.map((cp) => cp.id);
+      const permissionIds = permissions.map((p) => p.id);
+      const permissionIdsToBeRemoved = currentPermissionIds.filter(
+        (id) => !permissionIds.includes(id),
+      );
+
+      await Promise.all(
+        permissions.map(async (p) => {
+          const permissionObj: PermissionDto = {
+            show: p.show,
+            save: p.save,
+            edit: p.edit,
+            remove: p.remove,
+            roleId: roleId,
+            menuItemId: p.menuItemId,
+          };
+          if (!p.id) return await this.create(permissionObj);
+          return await this.partialUpdate(p.id, permissionObj);
+        }),
+      );
+
+      if (permissionIdsToBeRemoved.length > 0) {
+        await Promise.all(
+          permissionIdsToBeRemoved.map(async (pi) => await this.remove(pi)),
+        );
+      }
+
+      return 'Permissions updated';
+    } catch (err) {
+      throw customError(err?.message);
+    }
   }
 }

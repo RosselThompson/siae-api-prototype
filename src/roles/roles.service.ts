@@ -56,15 +56,24 @@ export class RolesService {
   async findOne(id: string) {
     try {
       const rolesQueryBuilder = this.generateRolesQueryBuilder();
-      return await rolesQueryBuilder.where('role.id = :id', { id }).getOne();
+      const role = await rolesQueryBuilder
+        .where('role.id = :id', { id })
+        .getOne();
+      if (!role) throw customError('Role does not exist');
+      return role;
     } catch (err) {
-      throw customError('This role already exists');
+      throw customError(err?.message);
     }
   }
 
-  async update(id: string, updateRoleDto: RoleDto) {
-    await this.roleRepository.update(id, updateRoleDto);
-    return await this.roleRepository.findOneBy({ id });
+  async update(id: string, roleDto: RoleDto) {
+    try {
+      await this.roleRepository.update(id, { name: roleDto.name });
+      await this.permissionService.bulkUpdate(roleDto.permissions, id);
+      return await this.findOne(id);
+    } catch (err) {
+      throw customError(err?.message);
+    }
   }
 
   async remove(id: string) {
@@ -75,7 +84,14 @@ export class RolesService {
   generateRolesQueryBuilder() {
     const queryBuilder = this.roleRepository.createQueryBuilder('role');
     queryBuilder.leftJoinAndSelect('role.users', 'user');
-    queryBuilder.leftJoinAndSelect('role.permissions', 'permission');
+    queryBuilder.leftJoinAndSelect(
+      'role.permissions',
+      'permission',
+      'permission.isActive = :isActive',
+      {
+        isActive: true,
+      },
+    );
     queryBuilder.leftJoinAndSelect('permission.menuItem', 'menuItem');
     return queryBuilder;
   }

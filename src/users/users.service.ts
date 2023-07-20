@@ -50,9 +50,13 @@ export class UsersService {
   async findOne(id: string) {
     try {
       const userQueryBuilder = this.generateUserQueryBuilder();
-      return await userQueryBuilder.where('user.id = :id', { id }).getOne();
+      const user = await userQueryBuilder
+        .where('user.id = :id', { id })
+        .getOne();
+      if (!user) throw customError('This user does not exist');
+      return user;
     } catch (err) {
-      throw customError('This user does not exist');
+      throw customError(err?.message);
     }
   }
 

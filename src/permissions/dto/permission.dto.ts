@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
 
 export class PermissionDto {
@@ -27,4 +27,8 @@ export class PermissionDto {
   @IsNotEmpty()
   @IsString()
   menuItemId: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  id?: string;
 }
