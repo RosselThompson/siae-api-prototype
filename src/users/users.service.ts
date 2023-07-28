@@ -70,7 +70,7 @@ export class UsersService {
       role,
     });
 
-    return await this.userRepository.findOneBy({ id });
+    return await this.findOne(id);
   }
 
   async remove(id: string) {

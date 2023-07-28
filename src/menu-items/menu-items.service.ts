@@ -44,7 +44,7 @@ export class MenuItemsService {
   async update(id: string, updateMenuItemDto: MenuItemDto) {
     await this.menuItemRepository.update(id, updateMenuItemDto);
 
-    return this.menuItemRepository.findOneBy({ id });
+    return this.findOne(id);
   }
 
   async remove(id: string) {
