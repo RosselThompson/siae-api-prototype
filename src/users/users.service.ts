@@ -60,6 +60,29 @@ export class UsersService {
     }
   }
 
+  async findUserProfile(id: string) {
+    try {
+      const userQueryBuilder = this.generateUserQueryBuilder();
+      userQueryBuilder
+        .leftJoinAndSelect(
+          'role.permissions',
+          'permission',
+          'permission.isActive = :isActive',
+          {
+            isActive: true,
+          },
+        )
+        .leftJoinAndSelect('permission.menuItem', 'menuItem');
+      const user = await userQueryBuilder
+        .where('user.id = :id', { id })
+        .getOne();
+      if (!user) throw customError('This user does not exist');
+      return user;
+    } catch (err) {
+      throw customError(err?.message);
+    }
+  }
+
   async update(id: string, userDto: UserDto) {
     const role = await this.roleRepository.findOneBy({ id: userDto.roleId });
     if (!role) throw customError('This role does not exist');

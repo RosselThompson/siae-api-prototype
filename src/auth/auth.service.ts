@@ -11,10 +11,11 @@ export class AuthService {
   ) {}
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.userService.findByEmail(email);
+    const isActive = user.isActive;
     const isValidPassword = user.hasHashPassword
       ? await checkPassword(password, user.password)
       : user.password === password;
-    if (user && isValidPassword) return user;
+    if (user && isActive && isValidPassword) return user;
     return null;
   }
 
