@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { UsersModule } from '../users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigModule } from '@nestjs/config';
+import { UsuarioModule } from 'src/usuario/usuario.module';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
 
 @Module({
   controllers: [AuthController],
@@ -16,7 +16,7 @@ import { ConfigModule } from '@nestjs/config';
       envFilePath: ['.env'],
       isGlobal: true,
     }),
-    UsersModule,
+    UsuarioModule,
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
