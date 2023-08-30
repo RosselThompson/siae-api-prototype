@@ -20,19 +20,22 @@ export class CarreraService {
   ) {}
 
   async create(careerDto: CarreraDto) {
-    const isValidateFaculty = await this.validateFaculties(
-      careerDto.facultades,
-    );
-    if (!isValidateFaculty) throw customError('Facultades no válidas');
+    const faculty = await this.facultyRepository.findOneBy({
+      id: careerDto.facultadId,
+    });
+    if (!faculty) throw customError('Esta facultad no existe');
 
-    return await this.careerRepository.save(careerDto);
+    return await this.careerRepository.save({
+      ...careerDto,
+      facultad: faculty,
+    });
   }
 
   async findAll(careerQueryDto: CarreraQueryDto) {
-    const queryBuilder = this.careerRepository.createQueryBuilder('carrera');
+    const careerQueryBuilder = this.generateCareerQueryBuilder();
     const queryBuilderWithFilters = setFilterToQueryBuilder(
       careerQueryDto,
-      queryBuilder,
+      careerQueryBuilder,
     );
     const paginationData = await getPaginationData(
       'carrera',
@@ -42,19 +45,28 @@ export class CarreraService {
     return paginationData;
   }
 
-  findOne(id: number) {
-    return this.careerRepository.findOneBy({ id });
+  async findOne(id: number) {
+    try {
+      const careerQueryBuilder = this.generateCareerQueryBuilder();
+      const career = await careerQueryBuilder
+        .where('carrera.id = :id', { id })
+        .getOne();
+      if (!career) throw customError('Esta carrera no existe');
+      return career;
+    } catch (err) {
+      throw customError(err?.message);
+    }
   }
 
   async update(id: number, careerDto: CarreraDto) {
-    const isValidateFaculty = await this.validateFaculties(
-      careerDto.facultades,
-    );
-    if (!isValidateFaculty) throw customError('Facultades no válidas');
+    const faculty = await this.facultyRepository.findOneBy({
+      id: careerDto.facultadId,
+    });
+    if (!faculty) throw customError('Esta facultad no existe');
 
     await this.careerRepository.update(id, {
       nombre: careerDto.nombre,
-      facultades: careerDto.facultades,
+      facultad: faculty,
     });
 
     return this.findOne(id);
@@ -65,16 +77,9 @@ export class CarreraService {
     return customOk('Carrera eliminada correctamente');
   }
 
-  async validateFaculties(faculties: Facultad[]) {
-    let flag = true;
-    await Promise.all(
-      faculties.map(async (f) => {
-        const faculty = await this.facultyRepository.findOneBy({ id: f.id });
-        if (!faculty?.id) {
-          flag = false;
-        }
-      }),
-    );
-    return flag;
+  generateCareerQueryBuilder() {
+    return this.careerRepository
+      .createQueryBuilder('carrera')
+      .leftJoinAndSelect('carrera.facultad', 'facultad');
   }
 }

@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { Facultad } from 'src/facultad/entities/facultad.entity';
 
@@ -7,7 +7,7 @@ export class Carrera extends BaseEntity {
   @Column()
   nombre!: string;
 
-  @ManyToMany(() => Facultad, (facultad) => facultad.carreras)
-  @JoinTable({ name: 'Carrera_Facultad' })
-  facultades: Facultad[];
+  @ManyToOne(() => Facultad, (facultad) => facultad.carreras)
+  @JoinColumn()
+  facultad: Facultad;
 }

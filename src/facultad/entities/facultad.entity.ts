@@ -1,7 +1,7 @@
 import { Carrera } from 'src/carrera/entities/carrera.entity';
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { Recinto } from 'src/recinto/entities/recinto.entity';
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity('Facultad')
 export class Facultad extends BaseEntity {
@@ -21,6 +21,9 @@ export class Facultad extends BaseEntity {
   @JoinColumn()
   recinto: Recinto;
 
-  @ManyToMany(() => Carrera, (carrera) => carrera.facultades)
+  @OneToMany(() => Carrera, (carrera) => carrera.facultad, {
+    cascade: true,
+  })
+  @JoinColumn()
   carreras: Carrera[];
 }
