@@ -16,7 +16,7 @@ export class FacultadService {
     private facultyRepository: Repository<Facultad>,
 
     @InjectRepository(Recinto)
-    private recintoRepository: Repository<Recinto>,
+    private readonly recintoRepository: Repository<Recinto>,
   ) {}
 
   async create(facultyDto: FacultadDto) {

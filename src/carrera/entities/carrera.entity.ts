@@ -8,6 +8,6 @@ export class Carrera extends BaseEntity {
   nombre!: string;
 
   @ManyToMany(() => Facultad, (facultad) => facultad.carreras)
-  @JoinTable()
+  @JoinTable({ name: 'Carrera_Facultad' })
   facultades: Facultad[];
 }

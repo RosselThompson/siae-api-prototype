@@ -16,7 +16,7 @@ export class CarreraService {
     private careerRepository: Repository<Carrera>,
 
     @InjectRepository(Facultad)
-    private facultyRepository: Repository<Facultad>,
+    private readonly facultyRepository: Repository<Facultad>,
   ) {}
 
   async create(careerDto: CarreraDto) {
