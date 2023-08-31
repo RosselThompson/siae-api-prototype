@@ -1,5 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { FacultyType } from 'src/common/constants/facultyType';
 
 export class FacultadDto {
   @ApiProperty()
@@ -7,10 +14,10 @@ export class FacultadDto {
   @IsString()
   nombre: string;
 
-  @ApiProperty()
+  @ApiProperty({ enum: FacultyType, default: FacultyType.FACULTAD })
+  @IsEnum(FacultyType)
   @IsNotEmpty()
-  @IsString()
-  tipo: string;
+  tipo: FacultyType;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -25,4 +32,9 @@ export class FacultadDto {
   @IsNotEmpty()
   @IsNumber()
   recintoId: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  id?: number;
 }

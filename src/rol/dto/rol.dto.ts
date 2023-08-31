@@ -8,6 +8,6 @@ export class RolDto {
   @IsString()
   nombre!: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: [PermisoDto] })
   permisos: PermisoDto[];
 }
