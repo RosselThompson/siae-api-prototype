@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
+import { Facultad } from 'src/facultad/entities/facultad.entity';
 
 export class CarreraDto {
   @ApiProperty()
@@ -9,6 +10,5 @@ export class CarreraDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsNumber()
-  facultadId: number;
+  facultades: Facultad[];
 }
